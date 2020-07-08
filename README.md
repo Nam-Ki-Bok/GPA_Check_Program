@@ -16,7 +16,7 @@
 2. 학기 별 학점 입력
 3. 졸업 조건 충족 여부 검사
 
-
+<img src="https://nam-ki-bok.github.io/assets/images/toy_project/score_main.png" style="zoom:50%;" />
 
 
 
