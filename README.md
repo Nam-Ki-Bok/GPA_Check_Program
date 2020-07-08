@@ -8,15 +8,20 @@
 
 UIS 에서 정보를 크롤링 하는 것 자체가 금지되어 있어 나 혼자 사용하는 용도로 아주아주 간단하게 만들어 보려고 한다.
 
-
-
 ### 기능
 
 1. 학기 별 학점 조회
 2. 학기 별 학점 입력
 3. 졸업 조건 충족 여부 검사
 
-<img src="https://nam-ki-bok.github.io/assets/images/toy_project/score_main.png" style="zoom:50%;" />
+---
 
+<a href="https://nam-ki-bok.github.io/gpa_check/GPA_1/" style="color:#0FA678">[GPA Check] 졸업 할 수 있을까?</a>
+
+<a href="https://nam-ki-bok.github.io/gpa_check/GPA_2/" style="color:#0FA678">[GPA Check] 학기 별 학점조회 메뉴 생성</a>
+
+<a href="https://nam-ki-bok.github.io/gpa_check/GPA_3/" style="color:#0FA678">[GPA Check] 임시 메인화면, 함수 제작</a>
+
+<img src="https://nam-ki-bok.github.io/assets/images/toy_project/score_main.png" style="zoom:50%;" />
 
 
