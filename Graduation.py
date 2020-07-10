@@ -1,6 +1,17 @@
 import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import QIcon
+import mysql.connector
+
+
+my_db = mysql.connector.connect(
+  host="localhost",
+  user="root",
+  password="Skarlqhr1!"
+)
+
+my_cur = my_db.cursor()
+my_cur.execute('USE Kibok_Class')
 
 main_html = "<font color=\"Lime\", size=\"10\">";
 
@@ -67,7 +78,13 @@ class MyApp(QMainWindow):
         print('1-2 학기 학점 조회 함수 실행')
         widget = QPlainTextEdit(self)
         widget.setReadOnly(True)
-        widget.appendPlainText('1-2 학기 학점 조회 함수 실행')
+
+        my_cur.execute('SELECT * FROM 1_2')
+        my_result = my_cur.fetchall()
+
+        widget.appendPlainText('1-2 학기 학점 조회 함수 실행\n')
+        for cur in my_result:
+            widget.appendPlainText(str(cur[2]))
         widget.setGeometry(25, 40, 950, 435)
         widget.show()
 
@@ -91,7 +108,11 @@ class MyApp(QMainWindow):
         print('3-1 학기 학점 조회 함수 실행')
         widget = QPlainTextEdit(self)
         widget.setReadOnly(True)
-        widget.appendPlainText('3-1 학기 학점 조회 함수 실행')
+        my_cur.execute('SELECT * FROM 3_1')
+        my_result = my_cur.fetchall()
+        widget.appendPlainText('3-1 학기 학점 조회 함수 실행\n')
+        for cur in my_result:
+            widget.appendPlainText(str(cur[2]))
         widget.setGeometry(25, 40, 950, 435)
         widget.show()
 
