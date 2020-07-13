@@ -24,6 +24,8 @@ UIS 에서 정보를 크롤링 하는 것 자체가 금지되어 있어 나 혼�
 
 <a href="https://nam-ki-bok.github.io/gpa_check/GPA_4/" style="color:#0FA678">[GPA Check] Python, MySQL 연동</a>
 
+<a href="https://nam-ki-bok.github.io/gpa_check/GPA_5/" style="color:#0FA678">[GPA Check] 출력 함수 정의 및 정리</a>
+
 <img src="https://nam-ki-bok.github.io/assets/images/toy_project/score_main.png" style="zoom:50%;" />
 
 
