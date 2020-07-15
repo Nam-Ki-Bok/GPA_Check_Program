@@ -30,6 +30,10 @@ UIS 에서 정보를 크롤링 하는 것 자체가 금지되어 있어 나 혼�
 
 <a href="https://nam-ki-bok.github.io/gpa_check/GPA_7/" style="color:#0FA678">[GPA Check] 입력 기능 구현</a>
 
+<a href="https://nam-ki-bok.github.io/gpa_check/GPA_8/" style="color:#0FA678">[GPA Check] 입력 기능 완성</a>
+
+<a href="https://nam-ki-bok.github.io/gpa_check/GPA_9/" style="color:#0FA678">[GPA Check] 출력 기능 완성</a>
+
 <img src="https://nam-ki-bok.github.io/assets/images/toy_project/score_main.png" style="zoom:50%;" />
 
 
