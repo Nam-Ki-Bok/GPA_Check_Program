@@ -4,6 +4,8 @@ from PyQt5.QtGui import QIcon
 import mysql.connector
 
 box_list = []  # 성적입력 combo_box
+class_list = []  # 성적입력 할 과목
+table_name = []  # input 에서 사용 할 테이블 이름
 
 my_db = mysql.connector.connect(
   host="localhost",
@@ -105,31 +107,63 @@ class MyApp(QMainWindow):
                                '----------------------------------------------------------------------------')
         application_credit = 0  # 신청학점
         acquisition_credit = 0  # 취득학점
+        average_grade = self.cal_average_credit(my_result)
+
         for idx, cur in enumerate(my_result):
-            class_name = str(cur[0])
-            classification = str(cur[1])
-            credit = str(cur[2])
+            class_name = str(cur[1])
+            classification = str(cur[2])
+            credit = str(cur[3])
+            grade = str(cur[4])
             application_credit += int(credit)
+            acquisition_credit += int(credit)
             if idx == 0:
                 if len(class_name) <= 8:
-                    output = class_name + '\t\t\t\t\t' + classification + '\t\t\t\t' + credit
+                    output = class_name + '\t\t\t\t\t' + classification + '\t\t\t\t' + credit + '\t\t' + grade
                 else:
-                    output = class_name + '\t\t\t\t' + classification + '\t\t\t\t' + credit
+                    output = class_name + '\t\t\t\t' + classification + '\t\t\t\t' + credit + '\t\t' + grade
             else:
                 if len(class_name) <= 8:
-                    output = '\n' + class_name + '\t\t\t\t\t' + classification + '\t\t\t\t' + credit
+                    output = '\n' + class_name + '\t\t\t\t\t' + classification + '\t\t\t\t' + credit + '\t\t' + grade
                 else:
-                    output = '\n' + class_name + '\t\t\t\t' + classification + '\t\t\t\t' + credit
+                    output = '\n' + class_name + '\t\t\t\t' + classification + '\t\t\t\t' + credit + '\t\t' + grade
             widget.appendPlainText(output)
 
         widget.appendPlainText('-------------------------------------------------------------------------------'
                                '----------------------------------------------------------------------------\n')
         widget.appendPlainText('신청학점 : ' + str(application_credit) + '\t\t\t\t\t취득학점 : ' + str(acquisition_credit) +
-                               '\t\t\t\t\t평균평점 : ')
+                               '\t\t\t\t\t평균평점 : ' + str(average_grade)[:4])
         widget.setGeometry(25, 40, 950, 435)
         widget.show()
 
+    def cal_average_credit(self, my_result):
+        sum = 0
+        p_cnt = 0
+        for cur in my_result:
+            if cur[4] == 'A+':
+                sum += 4.5
+            elif cur[4] == 'A0':
+                sum += 4.0
+            elif cur[4] == 'B+':
+                sum += 3.5
+            elif cur[4] == 'B0':
+                sum += 3.0
+            elif cur[4] == 'C+':
+                sum += 2.5
+            elif cur[4] == 'C0':
+                sum += 2.0
+            elif cur[4] == 'D+':
+                sum += 1.5
+            elif cur[4] == 'D0':
+                sum += 1.0
+            elif cur[4] == 'P':
+                p_cnt += 1
+
+        return sum / (len(my_result) - p_cnt)
+
+
     def insert_info(self, check):
+        table_name.clear()
+        table_name.append(check)
         widget = QPlainTextEdit(self)
         widget.setReadOnly(True)
         query = 'SELECT * FROM ' + check
@@ -140,9 +174,9 @@ class MyApp(QMainWindow):
         widget.appendPlainText('-------------------------------------------------------------------------------'
                                '----------------------------------------------------------------------------')
         for idx, cur in enumerate(my_result):
-            class_name = str(cur[0])
-            classification = str(cur[1])
-            credit = str(cur[2])
+            class_name = str(cur[1])
+            classification = str(cur[2])
+            credit = str(cur[3])
             if idx == 0:
                 if len(class_name) <= 8:
                     output = class_name + '\t\t\t\t\t' + classification + '\t\t\t\t' + credit
@@ -164,8 +198,10 @@ class MyApp(QMainWindow):
 
     def init_combo_box(self, my_result):
         y = 89
-
+        box_list.clear()
+        class_list.clear()
         for cur in my_result:
+            class_list.append(cur[0])
             cur = QComboBox(self)
             cur.addItem('A+')
             cur.addItem('A0')
@@ -183,6 +219,7 @@ class MyApp(QMainWindow):
             cur.setFixedSize(60, 60)
             cur.show()
             box_list.append(cur)
+
             y += 32
 
         insert_btn = QPushButton(self)
@@ -190,11 +227,15 @@ class MyApp(QMainWindow):
         insert_btn.setFixedSize(60, 30)
         insert_btn.move(900, y + 30)
         insert_btn.show()
-        insert_btn.clicked.connect(self.test)
+        insert_btn.clicked.connect(self.input_data)
 
-    def test(self):
-        for cur in box_list:
-            print(cur.currentText())
+    def input_data(self):
+        grade_list = [val.currentText() for val in box_list]
+        for idx, val in enumerate(grade_list):  # UPDATE 1_1 SET 등급 = 'A+' WHERE id = 1;
+            query = 'UPDATE ' + str(table_name[0]) + ' SET 등급 = \'' + val + '\' WHERE id = ' + str(idx + 1)
+            print(query)
+            my_cur.execute(query)
+            my_db.commit()
 
     def insert_1_1(self):
         self.insert_info('1_1')
