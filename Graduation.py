@@ -6,6 +6,7 @@ import mysql.connector
 box_list = []  # 성적입력 combo_box
 class_list = []  # 성적입력 할 과목
 table_name = []  # input 에서 사용 할 테이블 이름
+non_data = []  # input 에서 non_class data 담을 리스트
 
 my_db = mysql.connector.connect(
   host="localhost",
@@ -32,6 +33,10 @@ class MyApp(QMainWindow):
         widget.setGeometry(25, 40, 950, 435)
         widget.show()
 
+        insert_non_action = QAction(QIcon('insert.png'), '비교과', self)
+        insert_non_action.setShortcut('alt+0')
+        insert_non_action.triggered.connect(self.insert_non)
+
         insert_1_1_action = QAction(QIcon('insert.png'), '1-1', self)
         insert_1_1_action.setShortcut('alt+1')
         insert_1_1_action.triggered.connect(self.insert_1_1)
@@ -51,6 +56,10 @@ class MyApp(QMainWindow):
         insert_3_1_action = QAction(QIcon('insert.png'), '3-1', self)
         insert_3_1_action.setShortcut('alt+5')
         insert_3_1_action.triggered.connect(self.insert_3_1)
+
+        find_non_action = QAction(QIcon('pencil.png'), '비교과', self)
+        find_non_action.setShortcut('Ctrl+0')
+        find_non_action.triggered.connect(self.find_non)
 
         find_1_1_action = QAction(QIcon('pencil.png'), '1-1', self)
         find_1_1_action.setShortcut('Ctrl+1')
@@ -75,6 +84,7 @@ class MyApp(QMainWindow):
         menubar = self.menuBar()
         menubar.setNativeMenuBar(False)
         insert_score = menubar.addMenu('성적입력')
+        insert_score.addAction(insert_non_action)
         insert_score.addAction(insert_1_1_action)
         insert_score.addAction(insert_1_2_action)
         insert_score.addAction(insert_2_1_action)
@@ -82,6 +92,7 @@ class MyApp(QMainWindow):
         insert_score.addAction(insert_3_1_action)
 
         score_search = menubar.addMenu('학점조회')
+        score_search.addAction(find_non_action)
         score_search.addAction(find_1_1_action)
         score_search.addAction(find_1_2_action)
         score_search.addAction(find_2_1_action)
@@ -94,6 +105,31 @@ class MyApp(QMainWindow):
         self.setFixedSize(1000, 500)
         self.show()
 
+    def print_non_info(self):
+        widget = QPlainTextEdit(self)
+        widget.setReadOnly(True)
+        query = 'SELECT * FROM non_class'
+        my_cur.execute(query)
+        my_result = my_cur.fetchall()
+        widget.appendPlainText('비교과\n')
+        widget.appendPlainText('-------------------------------------------------------------------------------'
+                               '----------------------------------------------------------------------------\n')
+        text1 = '\t\t\t\t      세종사회봉사 : ' + str(my_result[0][1]) + '\n'
+        text2 = '\t\t\t\t      서양의역사와사상 : ' + str(my_result[0][2]) + '권\n'
+        text3 = '\t\t\t\t      동양의역사와사상 : ' + str(my_result[0][3]) + '권\n'
+        text4 = '\t\t\t\t      동서양의 문학 : ' + str(my_result[0][4]) + '권\n'
+        text5 = '\t\t\t\t      과학사상 : ' + str(my_result[0][5]) + '권\n'
+        text6 = '\t\t\t\t      토익 : ' + str(my_result[0][6]) + '점\n'
+        widget.appendPlainText(text1)
+        widget.appendPlainText(text2)
+        widget.appendPlainText(text3)
+        widget.appendPlainText(text4)
+        widget.appendPlainText(text5)
+        widget.appendPlainText(text6)
+        widget.appendPlainText('-------------------------------------------------------------------------------'
+                               '----------------------------------------------------------------------------\n')
+        widget.setGeometry(25, 40, 950, 435)
+        widget.show()
 
     def print_info(self, check):
         widget = QPlainTextEdit(self)
@@ -159,7 +195,6 @@ class MyApp(QMainWindow):
                 p_cnt += 1
 
         return sum / (len(my_result) - p_cnt)
-
 
     def insert_info(self, check):
         table_name.clear()
@@ -231,11 +266,112 @@ class MyApp(QMainWindow):
 
     def input_data(self):
         grade_list = [val.currentText() for val in box_list]
+
         for idx, val in enumerate(grade_list):  # UPDATE 1_1 SET 등급 = 'A+' WHERE id = 1;
             query = 'UPDATE ' + str(table_name[0]) + ' SET 등급 = \'' + val + '\' WHERE id = ' + str(idx + 1)
             print(query)
             my_cur.execute(query)
             my_db.commit()
+
+    def insert_non_info(self):
+        widget = QPlainTextEdit(self)
+        widget.setReadOnly(True)
+        widget.appendPlainText('-------------------------------------------------------------------------------'
+                               '----------------------------------------------------------------------------\n')
+        widget.appendPlainText('\t\t\t\t      세종사회봉사 : \n')
+        widget.appendPlainText('\t\t\t\t      서양의역사와사상 : \n')
+        widget.appendPlainText('\t\t\t\t      동양의역사와사상 : \n')
+        widget.appendPlainText('\t\t\t\t      동서양의 문학 : \n')
+        widget.appendPlainText('\t\t\t\t      과학사상 : \n')
+        widget.appendPlainText('\t\t\t\t      토익 : \n')
+        widget.appendPlainText('-------------------------------------------------------------------------------'
+                               '----------------------------------------------------------------------------\n')
+        widget.setGeometry(25, 40, 950, 435)
+        widget.show()
+
+        vol = QLineEdit(self)
+        vol.move(480, 78)
+        vol.setFixedSize(30, 20)
+        vol.show()
+        non_data.append(vol)
+
+        west = QLineEdit(self)
+        west.move(480, 108)
+        west.setFixedSize(30, 20)
+        west.show()
+        non_data.append(west)
+
+        east = QLineEdit(self)
+        east.move(480, 138)
+        east.setFixedSize(30, 20)
+        east.show()
+        non_data.append(east)
+
+        ew = QLineEdit(self)
+        ew.move(480, 168)
+        ew.setFixedSize(30, 20)
+        ew.show()
+        non_data.append(ew)
+
+        science = QLineEdit(self)
+        science.move(480, 198)
+        science.setFixedSize(30, 20)
+        science.show()
+        non_data.append(science)
+
+        toeic = QLineEdit(self)
+        toeic.move(480, 228)
+        toeic.setFixedSize(30, 20)
+        toeic.show()
+        non_data.append(toeic)
+
+        insert_btn = QPushButton(self)
+        insert_btn.setText('입력')
+        insert_btn.setFixedSize(60, 30)
+        insert_btn.move(700, 300)
+        insert_btn.show()
+        insert_btn.clicked.connect(self.input_non_data)
+
+    def input_non_data(self):
+        vol = non_data[0].text()
+        west = non_data[1].text()
+        east = non_data[2].text()
+        ew = non_data[3].text()
+        science = non_data[4].text()
+        toeic = non_data[5].text()
+
+        query = 'UPDATE non_class SET 세종사회봉사 = \'' + vol + '\' WHERE id = 1'
+        my_cur.execute(query)
+        print(query)
+        my_db.commit()
+
+        query = 'UPDATE non_class SET 서양 = \'' + west + '\' WHERE id = 1'
+        my_cur.execute(query)
+        print(query)
+        my_db.commit()
+
+        query = 'UPDATE non_class SET 동양 = \'' + east + '\' WHERE id = 1'
+        my_cur.execute(query)
+        print(query)
+        my_db.commit()
+
+        query = 'UPDATE non_class SET 동서양 = \'' + ew + '\' WHERE id = 1'
+        my_cur.execute(query)
+        print(query)
+        my_db.commit()
+
+        query = 'UPDATE non_class SET 과학사 = \'' + science + '\' WHERE id = 1'
+        my_cur.execute(query)
+        print(query)
+        my_db.commit()
+
+        query = 'UPDATE non_class SET 토익 = \'' + toeic + '\' WHERE id = 1'
+        my_cur.execute(query)
+        print(query)
+        my_db.commit()
+
+    def insert_non(self):
+        self.insert_non_info()
 
     def insert_1_1(self):
         self.insert_info('1_1')
@@ -251,6 +387,9 @@ class MyApp(QMainWindow):
 
     def insert_3_1(self):
         self.insert_info('3_1')
+
+    def find_non(self):
+        self.print_non_info()
 
     def find_1_1(self):
         self.print_info('1_1')
