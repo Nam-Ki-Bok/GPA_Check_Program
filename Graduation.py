@@ -99,11 +99,129 @@ class MyApp(QMainWindow):
         score_search.addAction(find_2_2_action)
         score_search.addAction(find_3_1_action)
 
+        cond_check_action = QAction(QIcon('pencil.png'), '실행', self)
+        cond_check_action.setShortcut('Ctrl+-')
+        cond_check_action.triggered.connect(self.cond_check)
+
         check_graduation = menubar.addMenu('졸업조건체크')
+        check_graduation.addAction(cond_check_action)
+
         self.setWindowTitle('졸업 할 수 있을까 ?')
         self.setGeometry(450, 300, 1000, 500)
         self.setFixedSize(1000, 500)
         self.show()
+
+    def cond_check(self):
+        semester = ['1_1', '1_2', '2_1', '2_2', '3_1', '3_2', '4_1', '4_2']
+        major_must = 0  # 전공필수
+        major_sel = 0  # 전공선택
+        must = 0  # 교양필수
+        select1 = 0  # 교선1
+        select2 = 0  # 교선2
+        basic = 0  # 학문기초교양
+
+        widget = QPlainTextEdit(self)
+        widget.setReadOnly(True)
+
+        for cur in semester:
+            try:
+                query = 'SELECT 이수구분, 학점 FROM ' + cur
+                my_cur.execute(query)
+                my_result = my_cur.fetchall()
+                for val in my_result:
+                    if val[0] == '전필':
+                        major_must += val[1]
+                    elif val[0] == '전선':
+                        major_sel += val[1]
+                    elif val[0] == '교필':
+                        must += val[1]
+                    elif val[0] == '교선1':
+                        select1 += val[1]
+                    elif val[0] == '교선2':
+                        select2 += val[1]
+                    elif val[0] == '기교':
+                        basic += val[1]
+            except:
+                pass
+
+        widget.appendPlainText('-------------------------------------------------------------------------------'
+                               '----------------------------------------------------------------------------')
+        major_must_text = '\t\t\t전공필수 : {} / 37'.format(major_must)
+        if major_must < 37:
+            major_must_text += ' \t{} 학점 부족 !!!'.format(37 - major_must)
+        else:
+            major_must_text += '\t조건 충족 !!!'
+        widget.appendPlainText(major_must_text)
+
+        major_sel_text = '\n\t\t\t전공선택 : {} / 35'.format(major_sel)
+        if major_sel < 35:
+            major_sel_text += '\t{} 학점 부족 !!!'.format(35 - major_sel)
+        else:
+            major_sel_text += '\t조건 충족 !!!'
+        widget.appendPlainText(major_sel_text)
+
+        must_text = '\n\t\t\t교양필수 : {} / 11'.format(must)
+        if must < 11:
+            must_text += '\t{} 학점 부족 !!!'.format(11 - must)
+        else:
+            must_text += '\t조건 충족 !!!'
+        widget.appendPlainText(must_text)
+
+        select1_text = '\n\t\t\t교양선택1 : {} / 15'.format(select1)
+        if select1 < 15:
+            select1_text += '\t{} 학점 부족 !!!\t\t3분야 이상 수강 필수 !!!'.format(15 - select1)
+        else:
+            select1_text += '\t조건 충족 !!! 3분야 이상 수강 확인 요망 !!!'
+        widget.appendPlainText(select1_text)
+
+        select2_text = '\n\t\t\t교양선택2 : {}'.format(select2) + '\t\t\t\t다른 이수구분 학점 모두 만족 후 나머지 학점 채울 것 !!!'
+        widget.appendPlainText(select2_text)
+
+        basic_text = '\n\t\t\t기초교양 : {}'.format(basic)
+        if basic < 9:
+            basic_text += '\t{} 학점 부족 !!!'.format(9 - basic)
+        else:
+            basic_text += '\t\t조건 충족 !!!'
+        widget.appendPlainText(basic_text)
+
+
+        widget.appendPlainText('-------------------------------------------------------------------------------'
+                               '----------------------------------------------------------------------------')
+
+        query = 'SELECT * FROM non_class'
+        my_cur.execute(query)
+        my_result = my_cur.fetchall()
+
+        vol = my_result[0][1]  # 세종사회봉사
+        west = my_result[0][2]  # 서양
+        east = my_result[0][3]  # 동양
+        ew = my_result[0][4]  # 동서양
+        science = my_result[0][5]  # 과학사
+        toeic = my_result[0][6]
+
+        vol_text = '\t\t\t세종사회봉사 : ' + vol
+        widget.appendPlainText(vol_text)
+
+        west_text = '\n\t\t\t서양의역사와사상 : {} / 4'.format(west)
+        widget.appendPlainText(west_text)
+
+        east_text = '\n\t\t\t동양의역사와사상 : {} / 2'.format(east)
+        widget.appendPlainText(east_text)
+
+        ew_text = '\n\t\t\t동서양의문학 : {} / 3'.format(ew)
+        widget.appendPlainText(ew_text)
+
+        science_text = '\n\t\t\t과학사 : {} / 1'.format(science)
+        widget.appendPlainText(science_text)
+
+        toeic_text = '\n\t\t\t토익 : {} / 700'.format(toeic)
+        widget.appendPlainText(toeic_text)
+
+        widget.appendPlainText('-------------------------------------------------------------------------------'
+                               '----------------------------------------------------------------------------')
+
+        widget.setGeometry(25, 40, 950, 435)
+        widget.show()
 
     def print_non_info(self):
         widget = QPlainTextEdit(self)
